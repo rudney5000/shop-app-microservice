@@ -7,9 +7,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
+        <module name="product" />
         <module name="discovery" />
         <module name="customer" />
-        <module name="product" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
