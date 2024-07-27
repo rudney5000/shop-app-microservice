@@ -65,8 +65,8 @@ services:
       - 9998:9998
       - 9999:9999
     environment:
-      - MINIO_ROOT_USER=shop
-      - MINIO_ROOT_PASSWORD=shop
+      - MINIO_ROOT_USER=shopping
+      - MINIO_ROOT_PASSWORD=shopping
     networks:
       - microservice-net
 
