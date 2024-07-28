@@ -1,4 +1,4 @@
-package com.shop.order.payload;
+package com.shop.order.kafka;
 
 import com.shop.order.model.PaymentMethod;
 import com.shop.order.payload.rs.CustomerResponse;
