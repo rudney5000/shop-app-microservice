@@ -1,12 +1,14 @@
 package com.shop.order.service;
 
 import com.shop.order.config.CustomerClient;
+import com.shop.order.config.PaymentClient;
 import com.shop.order.config.ProductClient;
 import com.shop.order.exception.BusinessException;
 import com.shop.order.mapper.OrderMapper;
 import com.shop.order.payload.OrderConfirmation;
 import com.shop.order.payload.rq.OrderLineRequest;
 import com.shop.order.payload.rq.OrderRequest;
+import com.shop.order.payload.rq.PaymentRequest;
 import com.shop.order.payload.rq.PurchaseRequest;
 import com.shop.order.payload.rs.OrderResponse;
 import com.shop.order.repository.OrderRepository;
@@ -31,6 +33,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
+    private final PaymentClient paymentClient;
 
     public Integer createdOrder(OrderRequest orderRequest) {
         var customer = this.customerClient.findCustomerById(orderRequest.customerId())
@@ -50,6 +53,15 @@ public class OrderService {
                     )
             );
         }
+
+        var paymentRequest = new PaymentRequest(
+                orderRequest.amount(),
+                orderRequest.paymentMethod(),
+                order.getId(),
+                order.getReference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
 
         orderProducer.sendOrderConfirmation(
                 new OrderConfirmation(
