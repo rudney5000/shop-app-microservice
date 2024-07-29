@@ -14,6 +14,7 @@ import com.shop.order.payload.rs.OrderResponse;
 import com.shop.order.repository.OrderRepository;
 import com.shop.order.kafka.OrderProducer;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,15 +35,16 @@ public class OrderService {
     private final OrderProducer orderProducer;
     private final PaymentClient paymentClient;
 
-    public Integer createdOrder(OrderRequest orderRequest) {
-        var customer = this.customerClient.findCustomerById(orderRequest.customerId())
-                .orElseThrow(() -> new BusinessException("Cannot create order:: No Customer exist provider ID"));
+    @Transactional
+    public Integer createOrder(OrderRequest request) {
+        var customer = this.customerClient.findCustomerById(request.customerId())
+                .orElseThrow(() -> new BusinessException("Cannot create order:: No customer exists with the provided ID"));
 
-        var purchaseProducts = this.productClient.purchaseProducts(orderRequest.products());
+        var purchasedProducts = productClient.purchaseProducts(request.products());
 
-        var order = this.orderRepository.save(orderMapper.toOrder(orderRequest));
+        var order = this.orderRepository.save(orderMapper.toOrder(request));
 
-        for (PurchaseRequest purchaseRequest: orderRequest.products()){
+        for (PurchaseRequest purchaseRequest : request.products()) {
             orderLineService.saveOrderLine(
                     new OrderLineRequest(
                             null,
@@ -52,10 +54,9 @@ public class OrderService {
                     )
             );
         }
-
         var paymentRequest = new PaymentRequest(
-                orderRequest.amount(),
-                orderRequest.paymentMethod(),
+                request.amount(),
+                request.paymentMethod(),
                 order.getId(),
                 order.getReference(),
                 customer
@@ -64,13 +65,14 @@ public class OrderService {
 
         orderProducer.sendOrderConfirmation(
                 new OrderConfirmation(
-                        orderRequest.reference(),
-                        orderRequest.amount(),
-                        orderRequest.paymentMethod(),
+                        request.reference(),
+                        request.amount(),
+                        request.paymentMethod(),
                         customer,
-                        purchaseProducts
+                        purchasedProducts
                 )
         );
+
         return order.getId();
     }
 

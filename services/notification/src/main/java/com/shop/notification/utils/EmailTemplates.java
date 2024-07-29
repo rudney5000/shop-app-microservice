@@ -11,7 +11,7 @@ public enum EmailTemplates {
     @Getter
     private final String subject;
 
-    EmailTemplates(String template, String subject){
+    EmailTemplates(String template, String subject) {
         this.template = template;
         this.subject = subject;
     }

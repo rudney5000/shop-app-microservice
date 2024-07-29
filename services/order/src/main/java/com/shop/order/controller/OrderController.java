@@ -20,7 +20,7 @@ public class OrderController {
     public ResponseEntity<Integer> createOrder(
             @RequestBody @Valid OrderRequest orderRequest
     ){
-        return ResponseEntity.ok(orderService.createdOrder(orderRequest));
+        return ResponseEntity.ok(orderService.createOrder(orderRequest));
     }
 
     @GetMapping

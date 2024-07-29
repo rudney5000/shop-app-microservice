@@ -12,24 +12,23 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final PaymentRepository paymentRepository;
-    private final PaymentMapper paymentMapper;
-    private final NotificationProducer notificationProducer;
+  private final PaymentRepository repository;
+  private final PaymentMapper mapper;
+  private final NotificationProducer notificationProducer;
 
-    public Integer createPayment(PaymentRequest paymentRequest) {
-        var payment = paymentRepository.save(paymentMapper.toPayment(paymentRequest));
+  public Integer createPayment(PaymentRequest request) {
+    var payment = this.repository.save(this.mapper.toPayment(request));
 
-        notificationProducer.sendNotification(
-                new PaymentNotificationRequest(
-                        paymentRequest.orderReference(),
-                        paymentRequest.amount(),
-                        paymentRequest.paymentMethod(),
-                        paymentRequest.customer().firstname(),
-                        paymentRequest.customer().lastname(),
-                        paymentRequest.customer().email()
-                )
-        );
-
-        return payment.getId();
-    }
+    this.notificationProducer.sendNotification(
+            new PaymentNotificationRequest(
+                    request.orderReference(),
+                    request.amount(),
+                    request.paymentMethod(),
+                    request.customer().firstname(),
+                    request.customer().lastname(),
+                    request.customer().email()
+            )
+    );
+    return payment.getId();
+  }
 }
