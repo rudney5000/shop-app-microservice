@@ -23,9 +23,10 @@ import static com.shop.notification.utils.EmailTemplates.PAYMENT_CONFIRMATION;
 import static java.nio.charset.StandardCharsets.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class EmailService {
+
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
@@ -36,9 +37,11 @@ public class EmailService {
             BigDecimal amount,
             String orderReference
     ) throws MessagingException {
+
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_RELATED, UTF_8.name());
-        messageHelper.setFrom("physma1234@gmail.com");
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, UTF_8.name());
+        messageHelper.setFrom("contact@aliboucoding.com");
+
         final String templateName = PAYMENT_CONFIRMATION.getTemplate();
 
         Map<String, Object> variables = new HashMap<>();
@@ -56,10 +59,11 @@ public class EmailService {
 
             messageHelper.setTo(destinationEmail);
             mailSender.send(mimeMessage);
-            log.info(String.format("INFO - Email successfully sent to %s with template %s,", destinationEmail, templateName));
-        }catch (MessagingException e){
-            log.warn("WARNING - Cannot send email to {}", destinationEmail);
+            log.info(String.format("INFO - Email successfully sent to %s with template %s ", destinationEmail, templateName));
+        } catch (MessagingException e) {
+            log.warn("WARNING - Cannot send Email to {} ", destinationEmail);
         }
+
     }
 
     @Async
@@ -70,9 +74,11 @@ public class EmailService {
             String orderReference,
             List<Product> products
     ) throws MessagingException {
+
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_RELATED, UTF_8.name());
-        messageHelper.setFrom("physma1234@gmail.com");
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, UTF_8.name());
+        messageHelper.setFrom("contact@aliboucoding.com");
+
         final String templateName = ORDER_CONFIRMATION.getTemplate();
 
         Map<String, Object> variables = new HashMap<>();
@@ -91,10 +97,10 @@ public class EmailService {
 
             messageHelper.setTo(destinationEmail);
             mailSender.send(mimeMessage);
-            log.info(String.format("INFO - Email successfully sent to %s with template %s,", destinationEmail, templateName));
-        }catch (MessagingException e){
-            log.warn("WARNING - Cannot send email to {}", destinationEmail);
+            log.info(String.format("INFO - Email successfully sent to %s with template %s ", destinationEmail, templateName));
+        } catch (MessagingException e) {
+            log.warn("WARNING - Cannot send Email to {} ", destinationEmail);
         }
-    }
 
+    }
 }
